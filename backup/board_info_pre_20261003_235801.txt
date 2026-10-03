@@ -1,0 +1,7 @@
+
+LSI Logic MPT Configuration Utility, Version 1.71, Sep 18, 2013
+
+1 MPT Port found
+
+Port Name        Seg/Bus/Dev  Board Name       Board Assembly   Board Tracer
+/proc/mpt/ioc0    0   4   0   1064SASIME-3030  2010-02-26-0     FTS00000001     

@@ -1,0 +1,21 @@
+	Adapter Selected is a LSI SAS 1068E(B3):
+
+	Executing Operation: Upload Full Flash
+
+	Upload Succesful!
+
+	Executing Operation: Upload NVDATA
+
+	Upload Succesful!
+
+	Executing Operation: Upload BIOS
+
+	Upload Succesful!
+
+	Executing Operation: Upload Firmware
+
+	Upload Succesful!
+
+
+Finished Processing Commands Successfully.
+	Exiting SASFlash.

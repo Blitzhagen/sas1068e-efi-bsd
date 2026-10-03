@@ -1,0 +1,12 @@
+
+LSI Logic MPT Configuration Utility, Version 1.71, Sep 18, 2013
+
+1 MPT Port found
+
+==============================================================================
+
+/proc/mpt/ioc0    LSI Logic SAS1068E B3    MPT 105   Firmware 01210000   IOC 0
+
+SAS1068E's links are down, down, down, down
+
+ B___T___L  Type       Vendor   Product          Rev      SASAddress     PhyNum
