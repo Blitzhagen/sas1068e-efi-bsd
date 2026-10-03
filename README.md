@@ -198,10 +198,15 @@ SPI-Flasher (z. B. CH341A) an den Flash-Chip der Karte.
   (bzw. Dumps der eigenen Karte) und dienen Dokumentations-/Recovery-
   Zwecken. Marken gehören den jeweiligen Eigentümern (LSI, Broadcom,
   Fujitsu, IBM, MSI).
-- Der EFI-BSD-Treiber ist Baujahr 2011; ob ihn ein modernes
-  Aptio-UEFI (hier: MSI B550) lädt, ist prinzipiell offen — das Flashen
-  selbst ist verifiziert, der Boot-Test steht aus. Lehnt die Firmware
-  den Treiber ab, arbeitet die Karte unverändert weiter.
+- **Verifiziert (2026-10-04, MSI MPG B550 Gaming Plus, Aptio):**
+  Der Treiber lädt aus dem Option-ROM (UEFI-Shell `drivers` zeigt
+  „LSI Logic Fusion MPT SAS Driver" mit Image-Quelle `Offset`),
+  exportiert ein RAID-1E-Volume als `BlockIo`-Device, und eine
+  FAT32-ESP auf dem Volume mit `\EFI\BOOT\BOOTX64.EFI` wird von der
+  Firmware gebootet (Boot-Eintrag „UEFI OS"). Nebeneffekte: HDDs
+  drehen bereits im POST hoch (Bustopologie-Scan) und der
+  Board-Splashscreen wird unterdrückt (Treiber greift in die
+  Grafikkonsole ein) — beides harmlos.
 - Flashen erfolgt auf eigene Gefahr — immer erst `sasflash -o -uflash`.
 - Der SAS-WWID in den Dumps ist eine hardwareeigene Adresse
   (steht auch auf dem Kartenaufkleber), keine Zugangsdaten.
