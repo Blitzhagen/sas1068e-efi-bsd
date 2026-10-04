@@ -279,7 +279,7 @@ firmware/  Original packages & flash images
            │    ├─ 3041ERB3.fw          IR fw B3 — this card's image
            │    ├─ 3041ETB3.fw          IT fw B3 (HBA alternative)
            │    ├─ 3041E{B,R}B2.fw      B2 silicon variants
-           │    ├─ 1064E_P21_*.fw       same blobs, cm68 mirror
+           │    ├─ 10{64,68}E_P21_*.fw  same blobs, cm68 mirror (4-/8-port)
            │    ├─ mptsas.rom           x86 BIOS 6.36.00.00
            │    ├─ hbaFlash.bat         original LSI DOS flash script
            │    ├─ p20_toolkit/         community P20 kit (scripts+fw)
@@ -288,10 +288,18 @@ firmware/  Original packages & flash images
            ├─ EFI_BSD_PH_21-3.22.00.zip    LSI EFI-BSD (retail, P21)
            ├─ Installer_P21_for_EFI.zip    incl. sasflash.efi (x64/EBC/Itanium)
            ├─ lsisasx64.rom               ← the flashed image (IRSCSI_NONIRSAS)
+           ├─ uefi_3.16.00.06.rom         alt. EFI-BSD (IBM BR10i build)
            ├─ x64sas.efi                  driver as loadable file (shell test)
            ├─ sasflash_x64.efi            UEFI-shell flash tool (bios32)
            ├─ Readme_EFI_BSD.txt          original readme
            └─ SHA256SUMS.txt
+sources/   vendored original source packages (mirrors keep dying):
+           ├─ SAS1068E_P20_Linux.zip    = firmware/debrand/p20_toolkit/
+           ├─ L8i_IT.zip                source of tools/dos/sasflash.exe
+           ├─ ibm_fw_sraidbr_10i-…bin   BR10i update → uefi_3.16.00.06.rom
+           ├─ Installer_P20_Linux.zip   sas2flash (SAS2 — context only)
+           ├─ UEFI_BSD_P20.zip          UEFI-BSD for SAS2 (context only)
+           └─ README.txt, SHA256SUMS.txt
 tools/     everything needed to perform every step
            ├─ lsiutil.x86_64            v1.71, 64-bit (+ lsiutil-1.71.tar.gz source)
            ├─ sasflash_linux            SASFlash 1.24.00.00, static i386 ELF
@@ -334,6 +342,9 @@ programmer (e.g. CH341A) on the card's flash chip.
 
 ## Sources & references
 
+**Everything needed is vendored in this repo** — the links below are
+provenance/attribution, not download dependencies.
+
 - LSI EFI-BSD P21 package (original download, archived):
   `http://www.lsi.com/downloads/Public/Host%20Bus%20Adapters/Host%20Bus%20Adapters%20Common%20Files/SAS_SATA_3G_P21/EFI_BSD_PH_21-3.22.00.zip`
   → Wayback: https://web.archive.org/web/20130329133656/http://www.lsi.com/downloads/Public/Host%20Bus%20Adapters/Host%20Bus%20Adapters%20Common%20Files/SAS_SATA_3G_P21/EFI_BSD_PH_21-3.22.00.zip
@@ -342,10 +353,12 @@ programmer (e.g. CH341A) on the card's flash chip.
 - `lsiutil` 1.71: scene.org mirror —
   http://http.pl.scene.org/packages/LSI/sw/lsiutil-1.71/lsiutil.x86_64
 - LSI download tree (tools/packages): http://http.pl.scene.org/packages/LSI/
-- IBM ServeRAID BR10i v2.75 (alternative EFI-BSD 3.16.00.06,
-  `uefi_3.16.00.06.rom`): Lenovo Doc DS108321 —
+- IBM ServeRAID BR10i v2.75 (alternative EFI-BSD 3.16.00.06):
+  package vendored as `sources/ibm_fw_sraidbr_10i-2.75_linux_32-64.bin`
+  (`unzip` it — contains `image/uefi_3.16.00.06.rom`, also in
+  `firmware/`), Lenovo Doc DS108321 —
   https://www.ibm.com/support/pages/lsi-1068e-sas-controller-bios-and-firmware-update-v275-linux-ibm-system-x
-  (original file behind IBM login; extraction guide:
+  (extraction guide:
   https://andidittrich.com/2016/06/firmware-update-of-ibm-serveraid-br10i-with-ubuntu.html)
 - EFI-BSD existence evidence on 1068E (`sasflash -listall` with `No Image`):
   http://sunhelp.org/pipermail/rescue_sunhelp.org/2020-July/142244.html
