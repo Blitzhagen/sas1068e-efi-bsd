@@ -71,7 +71,8 @@ LSI `SAS3041ER` P21 package, mirrored in cm68/lsi-mpt-large):
 | `*_release_notes.txt`, `MPT_READ.TXT` | official LSI docs |
 
 **Step-by-step reproduction** (Linux; a DOS/FreeDOS variant using
-`hbaFlash.bat` performs the same flash interactively):
+`hbaFlash.bat` + `tools/dos/sasflash.exe` performs the same flash
+interactively):
 
 ```bash
 # 0. device node + card identification
@@ -291,7 +292,12 @@ firmware/  Original packages & flash images
            ├─ sasflash_x64.efi            UEFI-shell flash tool (bios32)
            ├─ Readme_EFI_BSD.txt          original readme
            └─ SHA256SUMS.txt
-tools/     lsiutil.x86_64 (v1.71, 64-bit) + sasflash (Linux, static)
+tools/     everything needed to perform every step
+           ├─ lsiutil.x86_64            v1.71, 64-bit (+ lsiutil-1.71.tar.gz source)
+           ├─ sasflash_linux            SASFlash 1.24.00.00, static i386 ELF
+           ├─ dos/sasflash.exe          DOS build (FreeDOS + hbaFlash.bat path)
+           ├─ shellx64.efi              UEFI shell — BOOTX64.EFI test app
+           └─ SHA256SUMS.txt
 ```
 
 ---
