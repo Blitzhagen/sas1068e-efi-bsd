@@ -1,0 +1,29 @@
+ SCG Engineering Release Notice
+Product: Firmware 
+Version: 01.33.00.00 
+Release Date: 22-AUG-11
+Release Type: GCA 
+
+Phase21 GCA Release Version 01.33.00.00 - SAS1_FW_Ph_21 (SCGCQ00215335) Defects=0, Enhancements=0 (Version Change Only)
+
+Phase21 Beta Release Version 00.33.06.00 - SAS1_FW_Ph_21 (SCGCQ00213156) Change Summary (Defects=1) SCGCQ00208246 (DFCT) - SAS1 PH21: Activativation of a single drive Inactive IME volume does not fail
+
+Phase21 Beta Release Version 00.33.05.00 - SAS1_FW_Ph_21 (SCGCQ00210042)
+Change Summary ( Defects=2)
+SCGCQ00156730 (DFCT) - Device change below Table-to-Table Expander connection causes gen1 fw to present devices behind the Table-to-Table Expander to driver SCGCQ00209996 (CSET) - When HDDs are removed from RAID10, the other drives go down and come back up.
+
+Phase21 Beta Release Version 00.33.04.00 - SAS1_FW_Ph_21 (SCGCQ00206375) Change Summary (Defects=2) SCGCQ00200466 (CSET) - Change in PCIe Max Lane width does not get reflected in PCIe configuration register SCGCQ00203732 (CSET) - Fault 0x0500 on running heavy IOs to a connected Gen2 controller in target mode
+
+Phase21 Alpha Release Version 00.33.03.00 - SAS1_FW_Ph_21 (SCGCQ00202164) Change Summary (Defects=1) SCGCQ00193481 (CSET) - A primary bad drive in volume which fails SATAinit later is not failed out of the volume
+
+Phase21 Pre-Alpha Release Version 00.33.02.00 - SAS1_FW_Ph_21 (SCGCQ00192686) Change Summary ( Defects=1 Enhancements=1) SCGCQ00175704 (CSET) - IOs timeout due to new kind of phy lockup
+SCGCQ00181684 (CSET) - Firmware faults when diag/debug is enabled or testmux is enabled.
+
+Phase21 Pre-Alpha Release Version 00.33.01.00 - SAS1_FW_Ph_21 (SCGCQ00177063) Change Summary ( Defects=5)
+SCGCQ00173656 (DFCT) - 6G SATA drive negotiates to 1.5G speed
+SCGCQ00168973 (CSET) - SAS SATA mixing not allowed in enclosure
+SCGCQ00171504 (CSET) - Release of Snapshot Buffer Results in Fault 300
+SCGCQ00176806 (CSET) - 265d fault is seen when volume member drives are removed & inserted
+simultaneously SCGCQ00176811 (CSET) - Degraded Physical Disk coming as optimal when a diag reset is issued on a pending resync raid10 volume in Linux
+
+Phase21 Pre-Alpha Release Version 00.33.00.00 - SAS1_FW_Ph_21 (SCGCQ00176782) Defects=0, Enhancements=0 (Version Change Only)

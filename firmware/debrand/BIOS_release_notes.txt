@@ -1,0 +1,11 @@
+ SCG Engineering Release Notice
+Product: SAS2BIOS 
+Version: 6.36.00.00
+Release Date: 24-AUG-11 
+Release Type: GCA 
+
+Phase21 GCA Release Version 6.36.00.00 - SASBIOS_Ph21 (SCGCQ00215982) Defects=0, Enhancements=0 (Version Change Only)
+
+Phase21 Beta Release Version 6.35.02.00 - SASBIOS_Ph21 (SCGCQ00208726) Defects=0, Enhancements=0 (Version Change Only)
+
+Phase21 Alpha Release Version 6.35.01.00 - SASBIOS_Ph21 (SCGCQ00202222)Defects=0, Enhancements=0 (Version Change Only)

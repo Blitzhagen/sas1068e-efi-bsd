@@ -49,12 +49,50 @@ PRIMERGY OEM board. Manufacturing pages carried Fujitsu identity:
 
 → Raw state: `backup/config_pages_pre_20261003_235801.txt`
 
-### 2. Debranding (done earlier, pre-existing state)
+### 2. Debranding (crossflash to generic LSI firmware)
 
-The card had previously been **crossflashed**: Fujitsu firmware →
-generic **LSI IR 1.33.00.00** + MPT BIOS 6.36. Afterwards manageable
-with Windows MegaRAID Storage Manager (RAID 0/1/1E/10E). Leftovers:
-OEM strings in manufacturing pages (NVData) and the Fujitsu subsystem ID.
+The card had previously been **crossflashed** from Fujitsu OEM firmware
+to generic **LSI IR 1.33.00.00** (Phase 21 GCA, per
+`Firmware_release_notes.txt`) + `mptsas.rom` BIOS 6.36. Afterwards it
+is manageable with Windows MegaRAID Storage Manager (RAID 0/1/1E/10E).
+Leftovers before our cleanup: OEM strings in the manufacturing pages
+(NVData) and the Fujitsu subsystem ID.
+
+**The flashable files** live in `firmware/debrand/` (from the official
+LSI `SAS3041ER` P21 package, mirrored in cm68/lsi-mpt-large):
+
+| File | Purpose |
+|---|---|
+| `3041ERB3.fw` | **IR/RAID firmware for B3 silicon — what this card runs** |
+| `3041ETB3.fw` | IT (pure HBA/JBOD) firmware for B3 silicon |
+| `3041ERB2.fw` / `3041ETB2.fw` | same for older B2 silicon |
+| `mptsas.rom` | x86 option-ROM BIOS 6.36.00.00 |
+| `hbaFlash.bat` | original LSI flash script (DOS) |
+| `*_release_notes.txt`, `MPT_READ.TXT` | official LSI docs |
+
+Command (Linux after `modprobe mptctl`, or DOS/FreeDOS USB stick):
+
+```bash
+sasflash -o -f 3041ERB3.fw -b mptsas.rom   # IR mode: RAID 0/1/1E/10E
+sasflash -o -f 3041ETB3.fw -b mptsas.rom   # IT mode: pure HBA
+```
+
+Pick the file for your **chip revision** — `sasflash -listall` shows
+`1068E(B3)` → `*B3.fw` (B2 cards → `*B2.fw`).
+
+Vendor-locked OEM firmware may reject the image; then erase first:
+`sasflash -o -e 6` (clears everything except the manufacturing area —
+the SAS address survives) or `-e 7` (complete erase; the SAS address
+must be reprogrammed via `-sasadd`, it is printed on the card label).
+
+**Provenance proof:** our `-ufirmware` dump
+(`backup/fw_pre_efibsd_*.fw`) is **byte-identical to `3041ERB3.fw` up to
+offset 276 949** — only the trailing card-specific NVRAM region
+differs. The version string `MPTFW-01.33.00.00-IE` matches. And
+`3041ERB3.fw` is byte-identical to the independently published
+`1064E_P21_IR_B3.fw` blob in the cm68/lsi-mpt-large repo (SHA256
+`44b93238…`). The package's `mptsas.rom` carries the same
+`MPTBIOS-6.36.00.00` signature as our BIOS dump.
 
 ### 3. Identity unification → SAS3041E-R
 
@@ -148,6 +186,14 @@ backup/    Backups & state dumps
            ├─ board_info/port_settings/targets_*.txt
            └─ SHA256SUMS_all.txt, flash/backup logs
 firmware/  Original packages & flash images
+           ├─ debrand/                  ← Debranding files (section 2):
+           │    ├─ 3041ERB3.fw          IR fw B3 — this card's image
+           │    ├─ 3041ETB3.fw          IT fw B3 (HBA alternative)
+           │    ├─ 3041E{B,R}B2.fw      B2 silicon variants
+           │    ├─ 1064E_P21_*.fw       same blobs, cm68 mirror
+           │    ├─ mptsas.rom           x86 BIOS 6.36.00.00
+           │    ├─ hbaFlash.bat         original LSI DOS flash script
+           │    └─ release notes, SHA256SUMS.txt
            ├─ EFI_BSD_PH_21-3.22.00.zip    LSI EFI-BSD (retail, P21)
            ├─ Installer_P21_for_EFI.zip    incl. sasflash.efi (x64/EBC/Itanium)
            ├─ lsisasx64.rom               ← the flashed image (IRSCSI_NONIRSAS)
