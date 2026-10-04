@@ -1,0 +1,1745 @@
+****************************************************************************
+                                  MPTBIOS.TXT
+*****************************************************************************
+
+This file presents general information about the LSI Corporation 
+Fusion-MPT (TM) SAS BIOS and Configuration Utility.
+
+This text file is divided into these sections:
+
+SAS BIOS
+   Features
+   Boot Initialization with SCSI BIOS Boot Specification
+   CD-ROM Boot Initialization
+   Starting the SAS BIOS Configuration Utility
+   Using the Configuration Utility
+    Adapter List
+    Global Properties
+    Adapter Properties
+    SAS Topology
+    Device Properties
+    Format/Verify Screens
+    SAS Topology - More Keys
+    Advanced Adapter Properties
+    Advanced Device Properties
+    Adapter Timing Properties
+    PHY Properties
+    Integrated RAID Configuration and Management Screens
+    Exiting the SAS Configuration Utility
+
+
+*  *  *  *  *  *  *  *  *  *  *  * SAS BIOS *  *  *  *  *  *  *  *  *  *  *
+
+A SAS BIOS is the bootable ROM code that manages SAS hardware resources. It is 
+specific to a family of LSI Corporation Fusion-MPT SAS controllers or 
+processors. A Fusion-MPT SAS BIOS integrates with a standard system BIOS, 
+extending the standard disk service routine provided through INT13h.
+
+During the boot time initialization, the SAS BIOS determines if there are other 
+hard disks, such as an IDE drive, already installed by the system BIOS.  If 
+there are, the SAS BIOS maps any SAS or SATA drives it finds behind the drive(s)
+already installed. Otherwise, the SAS BIOS installs drives starting with the
+system boot drive. In this case, the system boots from a drive controlled by
+the SAS BIOS. The LSI Corporation SAS BIOS supports the 
+BIOS Boot Specification (BBS).
+
+The next section, "Boot Initialization with BIOS Boot Specification (BBS),"
+discusses selecting boot and drive order.
+
+
+*  *  *  *  *  *  *  *  *  *  * Features *  *  *  *  *  *  *  *  *  *  *  *
+
+The Fusion-MPT SAS BIOS features include:
+
+o Configuration for up to 256 adapters-any 4 can be chosen for
+  INT13 (bottom) support
+
+o Support for Message Passing Technology
+
+o Support for the LSI53C1064 device
+o Support for the LSI53C1064e device
+
+o Support for the LSI53C1066 device
+
+o Support for the LSI53C1068 device
+o Support for the LSI53C1068e device
+
+o Support for the LSI53C1078 device
+
+o Support for SAS and SATA devices
+
+o Support for Integrated RAID initialization (with proper firmware)
+
+
+*  *  *  *  Boot Initialization with BIOS Boot Specification (BBS) *  *  *
+
+The Fusion-MPT SAS BIOS provides support for the BIOS Boot Specification 
+(BBS), which allows you to choose which device to boot from by selecting the 
+priority.
+
+To use this feature, the system BIOS must also be compatible with the BBS. If
+your system supports the BBS, then you will use the system BIOS setup menu to
+select the boot and drive order. In the system BIOS setup, the Boot Connection
+Devices menu appears with a list of available boot options. Use that menu to
+select the device and rearrange the order. Then exit to continue the boot
+process.
+
+
+*  *  *  *  *  *  *  *  * CD-ROM Boot Initialization *  *  *  *  *  *  *  *  *
+
+The Fusion-MPT SAS BIOS supports boot initialization from a CD-ROM drive.
+The five types of emulation are:
+
+     o No emulation disk
+     o Floppy 1.2 Mbyte emulation disk
+     o Floppy 1.44 Mbyte emulation disk
+     o Floppy 2.88 Mbyte emulation disk
+     o Hard disk emulation
+
+The type of emulation assigns the drive letter for the CD-ROM. For example,
+if a 1.44 Mbyte floppy emulation CD was loaded, then the CD-ROM drive would
+become the designated A: drive, and the existing floppy would become drive B:.
+
+
+*  *  *  *  *  * Starting the SAS BIOS Configuration Utility *  *  *  *  *  *
+
+If you have SAS BIOS version 6.XX, and it includes the Fusion-MPT SAS BIOS
+Configuration Utility, you can change the default configuration of your SAS host
+adapters. You may decide to alter these default values if there is a conflict
+between device settings or if you need to optimize system performance.
+
+You can see the version number of the SAS BIOS in a banner displayed on your 
+computer monitor during boot. If the utility is available, this message
+also appears on your monitor:
+
+     Press Ctrl-C to start LSI Corp Configuration Utility...
+
+This message remains on your screen for about five seconds, giving you time
+to start the utility. If you decide to press "Ctrl-C", the message changes
+to:
+
+     Please wait, invoking SAS Configuration Utility...
+
+After a brief pause, your computer monitor displays the Main Menu of the
+Fusion-MPT PCI SAS BIOS Configuration Utility.
+
+
+These messages may appear during the boot process:
+
+1.  "Adapter removed from boot order!" appears when an adapter is removed from
+    the system or relocated behind a PCI bridge.
+
+2.  "Adapter configuration may have changed, reconfiguration is suggested!" 
+    appears if at least one adapter is not included in the boot order and
+    there are less than 4 adapters in the system.
+
+3.  "Updating Adapter List!" appears when less than four adapters are in the
+    boot order and more adapters exist than are shown.
+
+IMPORTANT: The SAS BIOS Configuration Utility is a powerful tool. If, while
+           using it, you somehow disable all of your controllers, pressing
+           Ctrl-A (or Ctrl-E on version 5.00 or later) after memory
+           initialization during reboot allows you to re-enable and
+           reconfigure.
+
+     Note: Not all devices detected by the Configuration Utility can be
+           controlled by the BIOS. Devices such as tape drives and scanners
+           require that a device driver specific to that peripheral be 
+           loaded. The SAS BIOS Configuration Utility does allow parameters 
+           to be modified for these devices.
+
+
+
+**************************************************************************
+*  *  *  *  *  *  * Using the Configuration Utility *  *  *  *  *  *  *  *
+**************************************************************************
+
+
+*   *   * Screen Format *   *   *
+
+All SAS BIOS Configuration Utility screens are partitioned into the fixed
+areas. Here is an example:
+
+
+ X 1                                      78
+ Y  ----------------------------------------
+ 1  |   Header Area                        |
+    ----------------------------------------
+ 1  |   Menu Area                          |
+    ----------------------------------------
+ 2  |                                      |
+    |                                      |
+    ... Main Area                        ...
+    |                                      |
+21  |                                      |
+    ----------------------------------------
+22  |                                      |
+    |   Footer Area                        |
+23  |                                      |
+    ----------------------------------------
+
+Header Area
+
+   This area provides static information text, which is typically
+   the product title and version.
+
+Menu Area
+
+   This area provides the current Screen title and Controller
+   information when on screens other than Adapter List.
+
+Main Area
+
+   This is the main area for presenting data. This area has a cursor for 
+   item selection, horizontal scrolling, and vertical scrolling. The 
+   horizontal and vertical scroll bars appear here if needed.
+
+Footer Area
+
+   This area provides general help information text.
+
+*   *   * User Input *   *   *
+
+Throughout the Configuration Utility there are general key inputs that apply
+on all screens:
+
+F1 = Help
+     Context sensitive help for the cursor-resident field.
+
+Arrow Keys = Select Item
+Home/End   = Select Item
+      Up, down, left, right movement to position the cursor.
+
++/- = Change Item
+      Items with values in [] brackets are modifiable.
+      Numeric keypad '+' and numeric keypad '-', update a modifiable field to
+      its next relative value.
+
+Esc = Abort/Exit
+
+      Escape aborts the current context operation and/or exits the current
+      screen. User confirmation is solicited as required if changes have been
+      made by user.
+
+Enter = Execute <Item>
+
+      Executable items are indicated by highlighted text and a different
+      background color. Press Enter to execute the field's associated function.
+
+      **Throughout the GUI, selections that are not currently permissible are
+      grayed out.
+
+      Behavior of executable items will vary throughout the Configuration 
+      Utility. Screen details below include info on their executable items.
+
+
+*  *  *  *  *  *  *  *  *  *  * Adapter List *  *  *  *  *  *  *  *  *  *  *  *
+
+When you invoke the Fusion-MPT SAS BIOS Configuration Utility, the Adapter List
+appears. This screen displays a scrolling list of up to 256 LSI Corporation SAS
+host adapters in the system and information about each of them.
+
+Use the arrow keys to select an adapter, then press Enter to view and modify
+the selected adapter's properties (and to gain access to the further screens).
+After selecting an adapter and pressing Enter, the adapter's devices are 
+scanned and the Adapter Properties screen appears. An example is shown below.
+
+The Adapter Boot Order is modifiable on this screen by using the -,+,Ins, and 
+Del keys while on the Boot Order field. Use Ins/Del to add or remove an adapter 
+from the Boot Order. Use the -/+ keys to modify an adapters position in the 
+boot order. When changes have been made to the boot order user will be prompted 
+to save before exiting the screen.
+
+From the Adapter List user may also access the Global Properties Screen by 
+pressing Alt+N.
+
+Global Properties allows changes to global scope settings. Refer to the section 
+on Global Properties below.
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| Adapter List  Global Properties                                              |
+|                                                                              |
+| Adapter     PCI  PCI  PCI  PCI      FW Revision       Status      Boot       |
+|             Bus  Dev  Fnc  Slot                                   Order      | 
+| SAS1068      0   2     0    1       1.23.00.00-IR     Enabled       0        |
+| SAS1068      0   3     0    2       0.03.23.00-IR     Enabled       1        |
+| SAS1068E     1   6     0    3       0.03.23.00-IR     Enabled                |
+| SAS1064E     2   A     0    4       0.03.23.00-IT     Disabled               |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+| Esc = Exit Menu        F1/Shift+1 = Help                                     |
+| Alt+N = Global Properties  -/+ = Alter Boot Order  Ins/Del = Alter Boot List |
+|------------------------------------------------------------------------------|
+
+
+*   *   * Field Descriptions *   *   *
+
+Adapter      
+
+   Indicates the specific LSI Corporation SAS controller type.
+
+PCI Bus      
+
+   Indicates the PCI Bus number (range 0x00 - 0xFF, 0 - 255 decimal)
+   assigned by the system BIOS to an adapter.
+
+PCI Dev
+
+   Indicates the PCI Device (range 0x00 - 0x1F, 0 - 31 decimal) assigned
+   by the system BIOS to an adapter.
+
+PCI Fnc
+
+   Indicates the PCI Function (range 0x00 - 0x7, 0 - 7 decimal) assigned
+   by the system BIOS to an adapter.
+
+PCI Slot
+
+   Indicates the PCI Slot the controller is located in.
+
+FW Revision
+
+   Displays the Fusion MPT Firmware version and type (IR or IT)
+
+Status
+
+   Indicates whether an adapter is eligible for LSI Corporation software control
+   or is reserved for control by non-LSI Corporation software 
+   (Enabled, Disabled, Error).
+
+   Enabled indicates the BIOS is either currently controlling the adapter
+   or will attempt to control the adapter upon reload.
+
+   Disabled indicates the BIOS is either not controlling the adapter or
+   will discontinue control of the adapter upon reload.
+
+   Whether Enabled or Disabled, the user will still be able to view and
+   modify settings for the adapter.  The Boot Support setting in the Adapter
+   Properties menu can be used to change the status of this setting.  The
+   BIOS must be reloaded (e.g., system rebooted) in order for a new Boot
+   Support setting to take effect.
+
+   Error indicates that the BIOS encountered a problem with the adapter.
+   Viewing and modifying settings for the adapter is allowed but the
+   information and functionality available may be limited.
+
+Boot Order
+
+   The Boot Order specifies the order in which adapters will boot when
+   more than one adapter is in a system. Up to four of the total
+   adapters in a system may be selected as bootable.
+
+   To add an adapter to the boot list, press Insert while on the Boot Order
+   field. To remove an adapter from the boot list, press Delete while on
+   the desired adapter's Boot Order field. The -/+ keys can be used to change
+   the adapter's position in the Boot Order.
+
+
+
+*  *  *  *  *  *  *  *  *  *  Global Properties  *  *  *  *  *  *  *  *  *  *
+
+The Global Properties screen is accessible by pressing Alt+N while on the 
+Adapter List Screen. To return to Adapter List from Global Properties Alt+N can
+again be pressed.
+
+Here is an example of the Global Properties Menu:
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| Adapter List  Global Properties                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|        Pause When Boot Alert Displayed  [Yes]                                |
+|        Boot Information Display Mode    [Verbose]                            |
+|        Support Interrupt                [Hook interrupt, the Default]        |
+|                                                                              |
+|        Restore Defaults                                                      |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+| Esc = Exit Menu       F1/Shift+1 = Help                                      |
+| Alt+N = Adapter List  -/+ = Change Item                                      |
+|------------------------------------------------------------------------------|
+
+
+*   *   * Field Descriptions *   *   *
+
+Pause When Boot Alert Displayed
+
+     This option specifies whether to pause for user acknowledgement after
+     displaying an alert message during boot. The Boot Alert setting can be
+     either No or Yes.
+
+     To continue after displaying a message, specify No.
+     To wait for any key after displaying a message, specify Yes.
+
+Boot Information Display Mode
+
+     This option specifies the information display mode of the BIOS during
+     boot. It controls how much information about adapters and devices
+     are displayed during boot.  Possible values are:
+
+        Display adapters only
+        Display adapters and all devices
+        Display minimal information
+        Display adapters and installed devices
+
+Support Interrupt
+
+     This option allows the ability to prevent a hook on INT40, if required.
+     Possible values are:
+        
+        Hook interrupt, the Default.
+        Bypass interrupt hook.
+
+<Restore Defaults>
+
+    Press Enter to obtain default settings.
+
+
+
+*  *  *  *  *  *  *  *  *  Adapter Properties   *  *  *  *  *  *  *  *  *  *
+
+The Adapter Properties Screen allows you to view and modify adapter settings.
+It also provides access to all other screens. Here is an example of the
+Adapter Properties screen:
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| Adapter Properties -- SAS1068                                                |
+|                                                                              |
+|       Adapter                         SAS1068                                |
+|       PCI Slot                        03                                     |
+|       PCI Address(Bus/Dev/Func)       03:00:00                               |
+|       MPT Firmware Revision           01.23.00.00-IR                         |
+|       SAS Address                     500605B0:0000C580                      |
+|       NVDATA Version                  2B.00                                  |
+|       Status                          Enabled                                |
+|       Boot Order                      1                                      |
+|       Boot Support                    [Enabled BIOS & OS]                    |
+|                                                                              |
+|                                                                              |
+|       RAID Properties                                                        |
+|                                                                              |
+|       SAS Topology                                                           |
+|                                                                              |
+|       Advanced Adapter Properties                                            |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+| Esc = Exit Menu       F1/Shift+1 = Help                                      |
+| Enter = Select Item   -/+ = Change Item                                      |
+|------------------------------------------------------------------------------|
+
+
+*   *   * Field Descriptions *   *   *
+
+Adapter
+
+   Indicates the specific LSI Corporation SAS controller type.
+
+PCI Slot
+
+   Indicates the PCI Slot the controller is located in.
+
+PCI Address
+
+   Displays the PCI Address assigned by the system BIOS to the adapter.
+       Bus value has range 0x00 - 0xFF, 0 - 255 decimal.
+       Device value has range  0x00 - 0x1F, 0 - 31 decimal.
+       Function has range 0x00 - 0x7, 0 - 7 decimal.
+
+FW Revision
+
+   Displays the Fusion MPT Firmware version and type (IR or IT)
+
+SAS Address
+
+   Displays the SAS Address assigned to this adapter.
+
+Status
+
+   Indicates whether an adapter is eligible for LSI Corporation software control
+   or is reserved for control by non-LSI Corporation software (Enabled, 
+   Disabled, Error).
+
+   Enabled indicates the BIOS is either currently controlling the adapter
+   or will attempt to control the adapter upon reload.
+
+   Disabled indicates the BIOS is either not controlling the adapter or
+   will discontinue control of the adapter upon reload.
+
+   Whether Enabled or Disabled, the user will still be able to view and
+   modify settings for the adapter.  The Boot Support setting in the Adapter
+   Properties menu can be used to change the status of this setting.  The
+   BIOS must be reloaded (e.g., system rebooted) in order for a new Boot
+   Support setting to take effect.
+
+   Error indicates that the BIOS encountered a problem with the adapter.
+   Viewing and modifying settings for the adapter is allowed but the
+   information and functionality available may be limited.
+
+Boot Order
+
+   The Boot Order specifies the order in which adapters will boot when
+   more than one adapter is in a system. Up to four of the total
+   adapters in a system may be selected as bootable.
+
+Boot Support
+
+   Specifies whether an adapter is eligible for LSI Corporation software control
+   or is reserved for control by non-LSI Corporation software 
+   (Enabled BIOS & OS, Enabled BIOS Only, Enabled OS Only, Disabled, 
+   default: Enabled BIOS & OS).
+     If Enabled BIOS & OS, then both the bios and OS driver will control the
+   adapter.
+     If Enabled BIOS Only, then the adapter will be controlled by the bios,
+   but OS drivers will not control it.  This setting may not be supported by
+   all OS drivers, for example there is no means to disable an adapter in a
+   Windows driver.
+     If Enabled OS Only, then the bios will not control the adapter but the
+   OS driver will control the adapter.
+     If Disabled, then the bios will not control the adapter when loaded.
+   However, the adapter will still be visible through the Configuration
+   Protocol.
+     Changes to this setting will be reflected in the Status field on the
+   main Adapter List menu.  The new setting will not take effect until the
+   bios is reloaded (e.g., system rebooted).
+
+
+*  *  *  *  *  *  *  *  *  *  SAS Topology *  *  *  *  *  *  *  *  *  *
+
+The SAS Topology screen presents a view of the adapter's SAS hierarchy. This
+screen also provides other user functionality as noted below.
+
+The following objects along with their significant properties are shown:
+        Adapter
+        PHYs
+        Attached Devices
+        Expanders/Enclosures.
+
+The SAS Topology is expanded for display as follows:
+        Select an expander/enclosure and press Enter to expand the Expander or
+        Enclosure and display all its Phys/Devices/Bays.
+
+        Hit Enter again to collapse the expander/Enclosure.
+
+
+While cursor is on the Device Identifier:
+
+-Hit Alt+D access device-specific screen.
+-Hit Alt+M to display additional options.
+-Hit Enter while on expander/enclosure to expand/collapse the display
+-Hit Enter while on device to activate locate LED.
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| SAS Topology -- SAS1068                                                      |
+|                                                                              |
+|                      Device Identifier                Device                 |
+| SAS1068(03:03:00)                                     Info                   |
+|  |-PHY 0             FUJITSU MAV2036RC                SAS                    |
+|  |-PHY 3             SEGATE ST936701SS                SAS                    | 
+|  |-Expander          LSILOGICSASx12 A.0               Expander               | 
+|    |-PHY 3           ATA  Maxtor 6y080M0  1EW0        SATA                   | 
+|    |-PHY 4           SEGATE ST936701SS                SAS                    | 
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|  Esc = Exit   F1/Shift+1 = Help                                              |
+|  Alt+D = Device Properties  Alt+M = More Keys                                |
+|------------------------------------------------------------------------------|
+
+Scrolling Cursor to the right will display further information:
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| SAS Topology -- SAS1068                                                      |
+|                                                                              |
+|                      Device Identifier         Negotiated Link  Maximum Link |
+| SAS1068(03:03:00)                              Speed (Gbps)     Speed (Gbps) |
+|  |-PHY 0             FUJITSU MAV2036RC         3.0              3.0          |
+|  |-PHY 3             SEGATE ST936701SS         1.5              3.0          | 
+|  |-Expander          LSILOGICSASx12 A.0                                      | 
+|    |-PHY 3           ATA  Maxtor 6y080M0  1EW0 1.5              1.5          | 
+|    |-PHY 4           SEGATE ST936701SS         3.0              3.0          | 
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|  Esc = Exit   F1/Shift+1 = Help                                              |
+|  Alt+D = Device Properties  Alt+M = More Keys                                |
+|------------------------------------------------------------------------------|
+
+
+*   *   * Field Descriptions *   *   *
+
+Device Identifier
+
+   This field indicates the ASCII device identifier string extracted from
+   the device's Inquiry Data.
+
+Device Info
+
+   This field indicates if a device is SAS or SATA, and if the device has
+   been selected as the Boot Device.
+
+Negotiated Link Speed
+
+   This field indicates the negotiated link speed for this Phy or whether it 
+   has been disabled
+
+Maximum Link Speed
+
+   This field indicates the maximum hardware link rate possible for this Phy.
+
+*  *  *  *  *  *  *  *  *  *  Device Properties  *  *  *  *  *  *  *  *  *  *
+
+
+The Device Properties screen displays information about a specific Device and
+is accessed by pressing Alt+D on the SAS Topology screen when the cursor is on
+the Device Identifier field of a Device.
+
+User can press Alt+N or Alt+P at any time while on this screen to cycle to the 
+next/previous device.
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| Device Properties -- SAS1068                                                 |
+|                                                                              |
+|                                                                              |
+|       Device Identifier                       SEAGATE ST936701SS  B828       |
+|       Scan Order                              3                              |
+|       Slot Number                             1                              |
+|       RAID Member                             No                             |
+|       Device Information                      SAS                            |
+|       Disk Capacity (GB)                      36                             |
+|       SAS Address                             5000C500:001009E1              |
+|       Serial Number                           3LC0093N0000H4442MHE           |
+|                                                                              |
+|                                                                              |  
+|       Format                                                                 |
+|                                                                              |  
+|       Verify                                                                 |
+|                                                                              |  
+|                                                                              |  
+|                                                                              |  
+|  Esc=Exit   F1/Shift+1=Help                                                  |  
+|  Alt+N = Next Device    Alt+P = Previous Device   Enter = Select Item        |  
+|------------------------------------------------------------------------------|
+
+
+*   *   * Field Descriptions *   *   *
+
+Device Identifier
+
+   This field indicates the ASCII device identifier string extracted from
+   the device's Inquiry Data.
+
+Scan Order
+
+   Indicates the scan order for this device. This would be the equivalent of 
+   a SCSI ID in parallel SCSI.
+
+Slot Number
+
+   Indicates the slot number for this device. This is used by enclosures to 
+   locate devices.
+
+RAID Member
+
+   If this disk is included in an integrated RAID volume, then this value will 
+   be 'Yes'. The disk will be 'No' if it is not a member of an IR volume.
+
+Disk Capacity
+
+   This is the size of the disk in Gigabytes.
+
+Device Information
+
+   This field indicates if a device is SAS or SATA.
+
+SAS Address
+
+   This field indicates the SAS Address of this device.
+
+Serial Number
+
+   This field indicates the Serial Number of this device.
+
+Format
+
+   Press Enter to enter the low-level format screen for the device. Once
+   on the format screen (see below) you can start a low-level format.
+
+   If enabled, this option allows low-level formatting on a disk drive.
+   Low-level formatting will completely and irreversibly erase all data on the
+   drive.
+
+   Note: Formatting will default the drive to a 512-byte sector size even if
+         the drive had previously been formatted to another sector size.
+
+Verify
+
+   Press Enter to enter the verify all sectors screen. Once on the Verify 
+   screen (see below) you can start a verify of all sectors on the device
+   and if needed reassign defective Logical Block Addresses (LBAs).
+
+
+*  *  *  *  *  *  *  *  *  *  Format/Verify Screens  *  *  *  *  *  *  *  *  *  *
+
+The Format and Verify screens have similar layout and are accessed by hitting 
+Enter on the appropriate field on the Device Properties screen.  
+These screens include an Elapsed Time and status bar that begin incrementing 
+once the operation is started and enable user to determine current progress of 
+the operation.
+
+Once on the Format screen, pressing the "F" key will begin the format.
+
+     ***ONCE FORMAT HAS STARTED IT CANNOT BE STOPPED OR CANCELLED***
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| Device Format -- SAS1068                                                     |
+|                                                                              |
+|       Device Identifier                       SEAGATE ST936701SS  B828       |
+|       SAS Address                             5000C500:001009E1              |
+|       Serial Number                           3LC0093N0000H4442MHE           |
+|                                                                              |
+|       WARNING!  Format will change the sector size to 512 bytes.             |
+|       Format will permanently erase all data on this device!                 |
+|       Format may take hours to complete and cannot be stopped.               |
+|       Press the 'F' key to begin format or any other key to exit.            |
+|                                                                              |
+|                                                                              |
+|                                                                              | 
+|       Elapsed Time:     00:00:00                                             |
+|                                                                              |
+|       Percent                                                                |
+|       Complete   0%                                              100%        |
+|                  ---------------------------------------------------         |
+|                  |                                                 |         |
+|                  |                                                 |         |
+|                  ---------------------------------------------------         |
+|                                                                              |
+|                                                                              |
+|  Esc = Exit Menu  F1/Shift+1 = Help                                          |
+|                                                                              |
+|------------------------------------------------------------------------------|
+
+
+Once on the Verify screen pressing the Enter key will begin the verify.
+
+     User may hit Esc at anytime to cancel the verify.
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| Device Verify -- SAS1068                                                     |
+|                                                                              |
+|       Device Identifier                       SEAGATE ST936701SS  B828       |
+|       SAS Address                             5000C500:001009E1              |
+|       Serial Number                           3LC0093N0000H4442MHE           |
+|                                                                              |
+|       All sectors on the device will be verified                             |
+|       Press Enter to continue or any other key to cancel                     |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              | 
+|       Elapsed Time:     00:00:00                                             |
+|                                                                              |
+|       Percent                                                                |
+|       Complete   0%                                              100%        |
+|                  ---------------------------------------------------         |
+|                  |                                                 |         |
+|                  |                                                 |         |
+|                  ---------------------------------------------------         |
+|                                                                              |
+|                                                                              |
+|  Esc = Exit Menu  F1/Shift+1 = Help                                          |
+|                                                                              |
+|------------------------------------------------------------------------------|
+
+*   *   * Field Descriptions *   *   *
+
+Device Identifier
+
+   This field indicates the ASCII device identifier string extracted from
+   the device's Inquiry Data.
+
+SAS Address
+
+   This field indicates the SAS Address of this device.
+
+Serial Number
+
+   This field indicates the Serial Number of this device.
+
+Elapsed Time
+
+   Displays the total time elapsed since Format or Verify Operation started.
+   
+Percent Complete
+
+   Graphical status bar display that indicates the current relative % complete
+   of the operation.
+
+
+*  *  *  *  *  *  *  *  *  SAS Topology - More Keys  *  *  *  *  *  *  *  *  *
+
+There are additional functions that can be performed while on the SAS Topology
+screen. These are detailed on by selecting Alt+M from the main SAS Topology
+screen.
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| SAS Topology -- SAS1068                                                      |
+|                                                                              |
+| More keys for the SAS Topology display:                                      |
+|                                                                              |
+| C = Clear Device Mappings for Non-Present Devices                            |
+| R = Refresh SAS Topology                                                     |
+| Enter = On a SAS Enclosure or Expander - Expand or Collapse Item             |
+| Enter = On a Disk Drive - Turn on the Locate LED (next key press turns off)  |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|  Esc = Exit   F1/Shift+1 = Help                                              |
+|  Alt+D = Device Properties  Alt+M = More Keys                                |
+|------------------------------------------------------------------------------|
+
+*   *   * Field Descriptions *   *   *
+
+Clear Device Mappings ('C')
+
+   In certain environments, MPT SAS Firmware will retain information pertaining
+   to the location of devices that have been removed from the system. In order
+   to clear out this persistent device mapping information, the 'C' key can be
+   selected.
+
+Refresh SAS Topology ('R')
+
+   Information displayed on the SAS Topology screen is collected prior to the 
+   screen being displayed. This information is not refreshed until the 'R'
+   option is selected, or the screen is re-entered. Selecting 'R' will cause
+   the configuration utility to rescan the topology and display the results.
+
+
+*  *  *  *  *  *  *  *  *  *  Advanced Adapter Properties  *  *  *  *  *  *  *
+
+The Advanced Adapter Properties screen supports viewing and modification of
+infrequently accessed adapter settings. It provides access to advanced
+Device Properties, Adapter Timing Properties, and PHY Properties.
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| Advanced Adapter Properties -- SAS1068                                       |
+|                                                                              |
+|       IRQ                             0B                                     |
+|       NVM                             Yes                                    |
+|       IO Port Address                 9000                                   |
+|       Chip Revision ID                00                                     |
+|                                                                              |
+|                                                                              |
+|       Advanced Device Properties                                             |
+|       Adapter Timing Properties                                              |
+|       PHY Properties                                                         |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|  Esc = Exit Menu  F1/Shift+1 = Help                                          |
+|  Enter = Select Item   -/+ = Change Item                                     |
+|------------------------------------------------------------------------------|
+
+*   *   * Field Descriptions *   *   *
+
+IRQ
+
+   Indicates the Interrupt Request Line used by an adapter.  The system
+   BIOS assigns this value.
+
+NVM
+   Indicates whether an adapter has non-volatile memory (NVM) associated
+   with it. An adapter's configuration is stored in its associated NVM.
+
+IO Port Address
+   Indicates the I/O Port Address used to communicate with an adapter. The
+   system BIOS assigns this number.
+
+Chip Revision ID
+   
+   Indicates the Revision ID of this adapter. 
+
+Advanced Device Properties
+
+   Press Enter to view and modify Advanced Device Properties.
+
+Adapter Timing Properties
+
+   Press Enter to view and modify Adapter Timing Properties.
+
+PHY Properties
+
+   Press Enter to view and modify Advanced PHY properties.
+
+
+
+*  *  *  *  *  *  *  *  *  Advanced Device Properties  *  *  *  *  *  *  *  *  *
+
+The Advanced Device Properties screen supports viewing and modification of 
+infrequently accessed device settings.
+
+|---------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                       |
+| Advanced Device Properties -- SAS1068                                     |
+|                                                                           |
+|       Maximum INT 13 devices for this adapter         24                  |
+|                                                                           |
+|       IO Timeout for Block Devices                    10                  |
+|       IO Timeout for Block Devices(Removable)         10                  |
+|       IO Timeout for Sequential Devices               10                  |
+|       IO Timeout for Other Devices                    10                  |
+|                                                                           |
+|       LUNs to Scan for Block Devices                  All                 |
+|       LUNs to Scan for Block Devices(Removable)       All                 |
+|       LUNs to Scan for Sequential Devices             All                 |
+|       LUNs to Scan for Other Devices                  All                 |
+|                                                                           |
+|       Removable Media Support                         [None]              |
+|                                                                           |
+|       Restore Defaults                                                    |
+|                                                                           |
+|                                                                           |
+|  Esc = Exit Menu  F1/Shift+1 = Help                                       |
+|  Enter = Select Item   -/+ = Change Item                                  |
+|---------------------------------------------------------------------------|
+
+
+*   *   * Field Descriptions *   *   *
+
+Maximum INT 13h Devices for this adapter
+
+   This field specifies the maximum number of devices attached to the
+   adapter for which to install a pre-OS IO interface.  The specified
+   number of devices in the adapter's device scan order list will have
+   an IO interface installed.  An installed IO interface is defined as
+   INT 13H.
+
+   X86 platforms allow a maximum of 24 INT 13h devices per system. Therefore,
+   fewer than the specified number of INT 13h devices may be installed.  The
+   defaults for X86 is 24 devices with a range of 0-24 allowed.
+
+IO Timeout for Block Devices
+
+   This field specifies the time, in seconds, (0-999, 0 means no-timeout) which
+   the host uses to timeout I/Os for the following devices with Non-Removable 
+   Media:
+
+        SCSI Device Type 00h - Direct Access
+        SCSI Device Type 04h - Write Once
+        SCSI Device Type 07h - Optical
+        SCSI Device Type 0Eh - Simplified Direct Access
+
+IO Timeout for Block Devices (Removable)
+
+   This field specifies the time, in seconds, (0-999, 0 means no-timeout) which
+   the host uses to timeout I/Os for the following devices with Removable Media:
+
+        SCSI Device Type 00h - Direct Access
+        SCSI Device Type 04h - Write Once
+        SCSI Device Type 05h - CD-ROM
+        SCSI Device Type 07h - Optical
+        SCSI Device Type 0Eh - Simplified Direct Access
+
+IO Timeout for Sequential Devices
+
+   This field specifies the time, in seconds, (0-999, 0 means no-timeout) which
+   the host uses to timeout I/Os for the following devices:
+
+        SCSI Device Type 01h - Sequential Access.
+
+IO Timeout for Other Devices
+   
+   This field specifies the time, in seconds, (0-999, 0 means no-timeout) which
+   the host uses to timeout I/Os for devices other than:
+
+        SCSI Device Type 00h - Direct Access
+        SCSI Device Type 01h - Sequential Access
+        SCSI Device Type 04h - Write Once
+        SCSI Device Type 05h - CD-ROM
+        SCSI Device Type 07h - Optical
+        SCSI Device Type 0Eh - Simplified Direct Access
+
+LUNs to Scan for Block Devices
+
+   Controls LUN scans for the following devices with Non-Removable Media:
+
+        SCSI Device Type 00h - Direct Access
+        SCSI Device Type 04h - Write Once
+        SCSI Device Type 07h - Optical
+        SCSI Device Type 0Eh - Simplified Direct Access
+
+    LUN 0 Only:	        Scan only LUN 0.
+    All:		Scan all LUNs.
+
+LUNs to Scan for Block Devices(Removable)
+
+   Controls LUN scans for the following devices with Removable Media:
+
+        SCSI Device Type 00h - Direct Access
+        SCSI Device Type 04h - Write Once
+        SCSI Device Type 05h - CD-ROM
+        SCSI Device Type 07h - Optical
+        SCSI Device Type 0Eh - Simplified Direct Access.
+
+    LUN 0 Only:	        Scan only LUN 0.
+    All:		Scan all LUNs.
+
+LUNs to Scan for Sequential Devices
+
+    Controls LUN scans for the following devices:
+
+        SCSI Device Type 01h - Sequential Access.
+
+    LUN 0 Only:	        Scan only LUN 0.
+    All:		Scan all LUNs.
+
+LUNs to Scan for Other Devices
+
+   Controls LUN scans for all devices other than the following:
+
+        SCSI Device Type 00h - Direct Access
+        SCSI Device Type 01h - Sequential Access
+        SCSI Device Type 04h - Write Once
+        SCSI Device Type 05h - CD-ROM
+        SCSI Device Type 07h - Optical
+        SCSI Device Type 0Eh - Simplified Direct Access.
+
+    LUN 0 Only:	        Scan only LUN 0.
+    All:		Scan all LUNs.
+
+Removable Media Support
+
+   This field specifies the removable media support option for an adapter.
+
+   None:  
+        Install no INT 13H interface for any Direct Access Removable Media 
+        devices.
+
+   Boot Device Only:
+        Install INT 13H interface for a Direct Access Removable Media device if
+        and only if media is present in the device at the time of BIOS 
+        initialization and either:
+
+        BBS System
+            The device is selected as the boot device. Refer to the BIOS Boot 
+            Specification for a description of BBS.
+
+        Non-BBS System
+                The device is setup as the boot device The adapter the device is
+                connected to is specified as the first adapter (i.e., 0) in the
+                Boot Adapter List. The device is specified as the first device 
+                in the adapter's device scan order list.
+
+   With Media Installed:
+        Install INT 13H interfaces for Direct Access Removable Media devices if
+        media is present in the device at the time of BIOS initialization.
+
+Restore Defaults
+
+   Press the Enter key to set default values for all items on this screen.
+
+
+
+*  *  *  *  *  *  *  *  *  Adapter Timing Properties  *  *  *  *  *  *  *  *  *
+
+The Adapter Timing Properties screen supports viewing and modification of 
+timing-specific settings.
+
+Note that the Link Error Settings values on this screen display the current 
+values for this PHY only and are not modifiable. To modify the Threshold values
+user should return to Advanced Adapter Properties screen.
+
+
+|---------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                       |
+| Adapter Timing Properties -- SAS1068                                      |
+|                                                                           |
+|       Direct Attached Spinup Delay (Secs)     [ 2]                        |
+|       Direct Attached Max Targets to Spinup   [ 0]                        |
+|       Expander Spinup Delay (Secs)            [ 0]                        |
+|       Expander Attached Max Targets to Spinup [ 0]                        |
+|                                                                           |  
+|                                                                           |  
+|                                                                           |  
+|       Report Device Missing Delay             [   0]                      |
+|                                                                           |
+|       IO Device Missing Delay                 [   0]                      |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|  Esc = Exit Menu  F1/Shift+1 = Help                                       |
+|  Enter = Select Item   -/+ = Change Item                                  |
+|---------------------------------------------------------------------------|
+
+*   *   * Field Descriptions *   *   *
+
+Direct Attached Spinup Delay (Secs)
+
+   This field specifies the number of seconds to wait between spinups of 
+   devices. Valid only when the device is configured (jumpered) to require a 
+   spinup. 
+   Values range from 0 to 15.
+
+Direct Attached Max Targets to Spinup
+
+   This field specifies the maximum number of targets that can be simultaneously
+   spinning up. The IOC must delay by the time indicated in spin-up delay field
+   before starting spin-up of the next set of targets. A value of zero in this 
+   field is treated the same as a value of one. 
+   Values range from 0 to 15.
+
+Expander Spinup Delay (Secs)
+
+   This field specifies the number of seconds to wait between spinups of 
+   devices. Valid only when the device is configured (jumpered) to require a 
+   spinup. 
+   Values range from 0 to 15.
+
+Expander Max Targets to Spinup
+
+   This field specifies the maximum number of targets that can be simultaneously
+   spinning up. The IOC must delay by the time indicated in spin-up delay field
+   before starting spin-up of the next set of targets. A value of zero in this
+   field is treated the same as a value of one. 
+   Values range from 0 to 15.
+
+Report Device Missing Delay
+
+   This field specifies the time (in seconds) the IOC will delay reporting a
+   target device missing after it becomes unavailable. If the device returns 
+   before this timer expires, the device is not reported as missing. 
+   Values range from 0 to 2032.
+
+IO Device Missing Delay
+
+   This field specifies the time interval (in seconds) the IOC will delay 
+   replying to SCSI Initiator request messages when the addressed device is 
+   missing due to the inability to access the target device. 
+   Values range from 0 to 255.
+
+
+
+*  *  *  *  *  *  *  *  *  *  PHY Properties  *  *  *  *  *  *  *  *  *  *
+
+The PHY Properties screen supports viewing of PHY-specific settings.
+
+|---------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                       |
+| PHY Properties -- SAS1068                                                 |
+|                                                                           |
+|       PHY                     0 (1st of 8 PHYs)                           |
+|       SAS Port                0                                           |
+|       Connector Name          Unknown                                     |
+|       Connector Location      Unknown                                     |
+|       Connector Type          Unknown                                     |
+|       Link Status             Enabled, 3.0Gbps                            |
+|       Discovery Status        00000000                                    |
+|                                                                           |  
+|       Device Identifier       SEAGATE ST9367091SS   B828                  |
+|       Scan Order              0                                           |
+|       Device Information      SAS                                         |
+|       SAS Address             5000C500:001009E1                           |
+|                                                                           |
+|                                                                           |
+|  Esc = Exit Menu  F1/Shift+1 = Help                                       |
+|  Enter = Select Item   -/+ = Change Item                                  |
+|---------------------------------------------------------------------------|
+
+
+*   *   * Field Descriptions *   *   *
+
+PHY
+
+   Displays the PHY number the information is for.
+   
+SAS Port
+
+   Indicates the associated SAS Port (0 to N) as configured on this adapter.
+   
+Connector Name
+
+   Displays programmable name for this Phy. If it is not programmed, then 
+   'Unknown' will be displayed.
+
+Connector Location
+
+   Displays programmable location for this Phy. If it is not programmed, then 
+   'Unknown' will be displayed.
+
+Connector Type
+
+   Displays programmable type for this Phy. If it is not programmed, then 
+   'Unknown' will be displayed.
+
+Link Status
+
+   Indicates the PHY link status. Possible values are:
+   
+        Enabled, Unknown Link Rate
+        PHY Disabled
+        Enabled, negotiation failed
+        Enabled, SATA OOB Complete
+        Enabled, 1.5 Gbs
+        Enabled, 3.0 Gbs
+
+Discovery Status
+
+   A 32 bit Hexadecimal value indicating the discovery status for
+   the PHY or Expander. Currently defined values are:
+
+        Discovery completed successfully        0x00000000
+        Loop Detected                           0x00000001
+        Unaddressable device exists             0x00000002
+        Multiple Ports                          0x00000004
+        Expander Error                          0x00000008
+        SMP Timeout                             0x00000010
+        Out of route entries                    0x00000020
+        SMP Response Index Does Not Exist       0x00000040
+        SMP Response Function Failed            0x00000080
+        SMP CRC error                           0x00000100
+
+Device Identifier
+
+   This field indicates the ASCII device identifier string extracted from
+   the device's Inquiry Data.
+
+Scan Order
+
+   Indicates the scan order for this device. This would be the equivalent of 
+   a SCSI ID for parallel SCSI.
+
+Device Information
+
+   This field indicates if a device is SAS or SATA.
+
+SAS Address
+
+   This field indicates the SAS Address of this device.
+
+
+
+*  *  *  *  Integrated RAID Configuration and Management Screens  *  *  *  *  *
+
+Integrated RAID configuration and management involves many screens, all of which
+are accessed by selecting RAID Properties on the Adapter Properties screen.
+
+If there are no RAID volumes currently configured:
+   The user is asked to create a RAID volume
+   
+If there is at least one RAID volume currently configured:
+   The user is shown the current volume(s) for management purposes.
+   
+The screens contained in the RAID configuration and management area are:
+   Select New Array Type
+   Create New Array
+   View Array
+   Manage Array
+   
+
+                        * Select New Array Type * 
+
+Select the type of array to create.                        
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| Select New Array Type -- SAS1068                                             |
+|                                                                              |
+|                                                                              |
+|      Create IM Volume        Create Integrated Mirror Array of 2             |
+|                              disks plus up to two optional hot spares.       |
+|                              Data on the primary disk may be migrated.       |
+|                                                                              |
+|      Create IME Volume       Create Integrated Mirrored Enhanced             |
+|                              Array of 3 to 10 disks including up             |
+|                              to two optional hot spares.                       |
+|                              ALL DATA on array disks will be DELETED!        |
+|                                                                              |
+|      Create IS Volume        Create Integrated Striping array of             |
+|                              2 to 10 disks.                                  |
+|                              ALL DATA on array disks will be DELETED!        |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+| Esc = Exit Menu       F1/Shift+1 = Help                                      |
+| Enter = Choose array type to create                                          |
+|------------------------------------------------------------------------------|
+
+
+*   *   * Field Descriptions *   *   *
+
+Create IM Volume
+
+   Create Integrated Mirror Array of 2 disks plus up to two optional hot spares. 
+   Data on the primary disk may be migrated.
+
+Create IME Volume       
+
+   Create Integrated Mirrored Enhanced Array of 3 to 10 disks including up to 2
+   optional hot spares. ALL DATA on array disks will be DELETED!
+
+Create IS Volume        
+
+   Create Integrated Striping array of 2 to 10 disks. ALL DATA on array disks 
+   will be DELETED!
+
+
+
+                           * Create New Array * 
+
+This screen allows the user to create a new array by selecting disks for the
+array.  For an IM volume, when the first disk is added, the user will be asked
+about the data on the disks.
+
+Press 'M'
+   Keep existing data, migrate to an IM array.  Synchronization of the disk will
+   occur.
+   
+Press 'D'
+   Overwrite existing data, create a new IM array.  ALL DATA on ALL disks in the
+   array will be DELETED!!  No Synchronization performed.
+   
+After the volume is configured, the user would press 'C' to create the array.
+The user will be asked to save changes, which will create the array.  During the
+creation process, the utility will pause.  After which time, the user will be
+taken back to Adapter Properties.
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| Create New Array -- SAS1068                                                  |
+|                                                                              |
+|   Array Type:                         IM                                     |
+|   Array Size(MB)                      34332                                  |
+|                                                                              |
+| Slot  Device Identifier               RAID   Hot    Drive     Pred  Size     |
+| Num                                   Disk   Spr    Status    Fail  (MB)     |
+|   1   MAXTOR ATLAS15K2_36SAS BG34     [Yes]  [No]   Primary   ---   35074    |
+|   2   MAXTOR ATLAS15K2_36SAS BG34     [Yes]  [No]   Secondary ---   35074    |
+|   8   MAXTOR ATLAS15K2_36SAS BG34     [No]   [Yes]  Hot Spare ---   35074    |
+|  11   MAXTOR ATLAS15K2_36SAS BG34     [No]   [No]   Max Dsks  ---   35074    |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+| Esc = Exit Menu       F1/Shift+1 = Help                                      |
+| Space/+/- = Select disk for array or hot spare    C = Create array           |
+|------------------------------------------------------------------------------|
+
+
+*   *   * Field Descriptions *   *   *
+
+Array Type
+
+   Indicates the type of array being created.
+   
+Array Size
+
+   Indicates the size of the array in Megabytes.
+   
+Slot Num
+
+   This field displays the order in which devices are scanned.
+
+Device Identifier
+
+   This field is the device identifier.
+   
+RAID Disk
+
+   Specifies the devices (disks) that make up a RAID array (Yes, No, default 
+   NO).
+
+   If Yes, the device is part of a RAID array.
+   If No, the device is not part of a RAID array.
+
+   This field is grayed out under the following conditions:
+   - the device does not meet the minimum requirements for use in a RAID array
+   - the device is not large enough to mirror existing data on the primary drive
+   - this disk has been selected as a Hot Spare for the RAID array
+
+Hot Spr
+
+   Specifies whether a device is a Hot Spare for a RAID array (Yes, No, 
+   default NO).
+   If Yes, the device will be used as a Hot Spare for the RAID array.
+   If No, the device will not be used as a Hot Spare for the RAID array.
+   Notes:
+   - Up to two Hot Spares per controller are permitted.
+   - RAID Arrays do not require a Hot Spare.
+   - A Hot Spare can be specified at array creation or any time after creation 
+     provided the array is made up of 9 disks or fewer.
+
+   This field is grayed out under the following conditions:
+   - the device does not meet the minimum requirements for use in a RAID array
+   - the array already has the maximum number of Hot Spares
+   - the array is made up of the maximum number of devices (10)
+   - the device isn't large enough to mirror existing data on the primary
+   - Integrated Striping has been selected. Hot Spares are not supported for 
+     striped arrays.
+
+Drive Status
+
+   Ok              Disk is online and fully functional
+   Missing         Disk is not responding
+   Failed          Disk has failed
+   Initing         Disk is initializing
+   CfgOffln        Disk is offline at host's request
+   UserFail        Disk is marked failed at host's request
+   Offline         Disk is offline for some other reason
+   Inactive        Disk has been set inactive
+   Not Syncd       Data on disk is not synchronized with the rest of the array
+   Primary         Disk is the primary disk for a 2 disk mirror  and is OK
+   Secondary       Disk is the secondary disk for a 2 disk mirror and is OK
+   Wrg Type        Device is not compatible for use as part of an RAID Array
+   Too Small       Disk is too small to mirror existing data
+   Max Dsks        Maximum # of disks allowed for this type of Array reached
+                   Maximum # of total IR disks on a controller reached
+   No SMART        Disk doesn't support SMART, cannot be used in an RAID array
+   Wrg Intfc       Device interface (SAS/SATA) differs from existing IR disks 
+
+Pred Fail
+
+   Indicates whether device SMART is predicting device failure (Yes, No).
+
+Size(MB)
+
+   Indicates the size of the device in megabytes (where a megabyte is
+   (1024 x 1024) = 1,048,576).
+   
+   If the device is part of a two-disk array, this field will reflect the size
+   of the array - not the size of the individual disk.
+   
+   If the device is part of a three or more disk array, this field is the size
+   that the disk makes up within the array.
+   
+   NOTE: When creating a striped array, the usable size of the array is
+   determined by the Number of drives X Size of the smallest drive in the
+   array. In arrays consisting of different sized drives, excess space on
+   larger drives will be unusable.
+
+
+
+                               * View Array * 
+
+This screen allows the user to view the current array configuration.
+
+Press Enter to Manage the Array when Manage Array is highlighted.
+
+Press Alt+N to view the next array.
+
+Press 'C' to create a new array.
+
+Press 'R' to refresh the array information.
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| View Array -- SAS1068                                                        |
+|                                                                              |
+|      Array                        1 of 1                                     |
+|      Identifier                   LSILOGICLogical Volume  3000               |
+|      Type                         IM                                         |
+|      Scan Order                   1                                          |
+|      Size(MB)                     34332                                      |
+|      Status                       Optimal                                    |
+|                                                                              |
+|      Manage Array                                                            |
+|                                                                              |
+| Slot  Device Identifier               RAID   Hot    Drive     Pred  Size     |
+| Num                                   Disk   Spr    Status    Fail  (MB)     |
+|   1   MAXTOR ATLAS15K2_36SAS BG34     Yes    No     Primary   No    35074    |
+|   2   MAXTOR ATLAS15K2_36SAS BG34     Yes    No     Secondary No    35074    |
+|   8   MAXTOR ATLAS15K2_36SAS BG34     No     Yes    Hot Spare No    35074    |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+| Esc = Exit Menu       F1/Shift+1 = Help                                      |
+| Enter=Select Item   Alt+N=Next Array   C=Create an array   R=Refresh Display |
+|------------------------------------------------------------------------------|
+
+
+*   *   * Field Descriptions *   *   *
+
+Array
+
+   The number of this array.
+
+Identifier
+
+   The identifier of this array.
+   
+Type
+
+   The RAID type.
+   
+Slot Num
+
+   This field displays the order in which devices are scanned.
+   
+Size(MB)
+
+   The size of the array.
+   
+Status
+
+   The status of the array.   
+   
+Scan ID
+
+   This field displays the order in which devices are scanned.
+
+Device Identifier
+
+   This field is the device identifier.
+   
+RAID Disk
+
+   Specifies the devices (disks) that make up a RAID array (Yes, No, default 
+   NO).
+
+   If Yes, the device is part of a RAID array.
+   If No, the device is not part of a RAID array.
+
+   This field is grayed out under the following conditions:
+   - the device does not meet the minimum requirements for use in a RAID array
+   - the device is not large enough to mirror existing data on the primary drive
+   - this disk has been selected as a Hot Spare for the RAID array
+
+Hot Spr
+
+   Specifies whether a device is a Hot Spare for a RAID array (Yes, No, 
+   default NO).
+   If Yes, the device will be used as a Hot Spare for the RAID array.
+   If No, the device will not be used as a Hot Spare for the RAID array.
+   Notes:
+   - Up to two Hot Spares per controller are permitted.
+   - RAID Arrays do not require a Hot Spare.
+   - A Hot Spare can be specified at array creation or any time after creation 
+     provided the array is made up of 9 disks or fewer.
+
+   This field is grayed out under the following conditions:
+   - the device does not meet the minimum requirements for use in a RAID array
+   - the array already has the maximum number of Hot Spares
+   - the array is made up of the maximum number of devices (10)
+   - the device isn't large enough to mirror existing data on the primary
+   - Integrated Striping has been selected. Hot Spares are not supported for 
+     striped arrays.
+
+Drive Status
+
+   Ok              Disk is online and fully functional
+   Missing         Disk is not responding
+   Failed          Disk has failed
+   Initing         Disk is initializing
+   CfgOffln        Disk is offline at host's request
+   UserFail        Disk is marked failed at host's request
+   Offline         Disk is offline for some other reason
+   Inactive        Disk has been set inactive
+   Not Syncd       Data on disk is not synchronized with the rest of the array
+   Primary         Disk is the primary disk for a 2 disk mirror  and is OK
+   Secondary       Disk is the secondary disk for a 2 disk mirror and is OK
+   Wrg Type        Device is not compatible for use as part of an RAID Array
+   Too Small       Disk is too small to mirror existing data
+   Max Dsks        Maximum # of disks allowed for this type of Array reached
+                   Maximum # of total IR disks on a controller reached
+   No SMART        Disk doesn't support SMART, cannot be used in an RAID array
+   Wrg Intfc       Device interface (SAS/SATA) differs from existing IR disks 
+
+Pred Fail
+
+   Indicates whether device SMART is predicting device failure (Yes, No).
+
+Size(MB)
+
+   Indicates the size of the device in megabytes (where a megabyte is
+   (1024 x 1024) = 1,048,576).
+   
+   If the device is part of a two-disk array, this field will reflect the size
+   of the array - not the size of the individual disk.
+   
+   If the device is part of a three or more disk array, this field is the size
+   that the disk makes up within the array.
+   
+   NOTE: When creating a striped array, the usable size of the array is
+   determined by the Number of drives X Size of the smallest drive in the
+   array. In arrays consisting of different sized drives, excess space on
+   larger drives will be unusable.
+
+
+
+                               * Manage Array * 
+
+Manage the current array.
+
+If the user selects Manage Hot Spare, the utility will display a hot spare
+management screen that has the same layout as the Create New Array screen.
+
+The user will be asked to confirm selections of Synchronize Array, Activate
+Array, and Delete Array by pressing 'Y' for yes or 'N' for no.
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+| Manage Array -- SAS1068                                                      |
+|                                                                              |
+|                                                                              |
+|      Identifier                   LSILOGICLogical Volume  3000               |
+|      Type                         IM                                         |
+|      Scan Order                   1                                          |
+|      Size(MB)                     34332                                      |
+|      Status                       Optimal                                    |
+|                                                                              |
+|      Manage Hot Spares                                                       |
+|                                                                              |
+|      Synchronize Array                                                       |
+|                                                                              |
+|      Activate Array                                                          |
+|                                                                              |
+|      Delete Array                                                            |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+| Esc = Exit Menu       F1/Shift+1 = Help                                      |
+| Enter = Select Item                                                          |
+|------------------------------------------------------------------------------|
+
+
+*   *   * Field Descriptions *   *   *
+
+Identifier
+
+   The identifier of this array.
+   
+Type
+
+   The RAID type.
+   
+Scan Order
+
+   The scan order of the array.
+   
+Size(MB)
+
+   The size of the array.
+   
+Status
+
+   The status of the array.   
+   
+Manage Hot Spares
+
+   Press enter to modify the array's hot spare configuration.
+   
+   This field is grayed out under the following conditions:
+   - the array is inactive
+   - the array is at its maximum number of devices
+   - Striped Arrays do not support Hot Spares so no modifications can be made 
+     to an array once it is created.
+
+Synchronize Array
+
+   Press enter to synchronize the RAID array.
+   
+   This field is grayed out under the following conditions:
+   - the array is inactive
+   - the array does not need to be resynchronized
+   - the adapter's MPT FW does not support the feature
+   - The volume type is Integrated Striping.
+
+Activate Array
+
+   This field is used to activate a RAID array.
+
+Delete Array
+
+   This field is used to delete the currently displayed RAID array.
+
+
+
+*  *  *  *  *  *  * Exiting the SAS Configuration Utility *  *  *  *  *  *  *  *
+
+As some changes only take effect during the exit of the utility, it is important
+to always exit the utility properly.  From the Adapter List, press the Esc key
+to exit the utility.  In addition, the a similar exit screen is used when 
+exiting most other screens, and can be used to save settings.
+
+The exit screen will show some options that are grey, indicating that they are
+not available at this time.  Only available options will be selectable.
+
+
+|------------------------------------------------------------------------------|
+| LSI Corp Config Utility    v6.18.00.00 (2007.08.07)                          |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                    Are you sure you want to exit?                            |
+|                     Cancel Exit                                              |
+|                     Save changes and reboot                                  |
+|                     Discard changes and reboot                               |
+|                     Exit the Configuration Utility and Reboot                |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|  Esc=Exit Menu    F1/Shift+1=Help                                            |
+|                                                                              |
+|------------------------------------------------------------------------------|
+

@@ -1,0 +1,27 @@
+   SCG Engineering Release Notice
+Product: Firmware 
+Version: 01.32.00.00 
+Release Date: 08-DEC-10 
+Release Type: GCA 
+
+Defects Fixed (13) 
+Enhancements Implemented (4) 
+Defects Fixed (13): 
+SCGCQ00159404  -  IO Timeouts Occur When a BREAK Primitive is Sent Erroneously.
+SCGCQ00128321  -  Credit stuck at zero until controller reset.
+SCGCQ00133030  -  Fault 0x0800 in release, Fault 0x060C in debug and diag builds
+SCGCQ00143824  -  (SATA-Only) RxBuffer Workaround causes drives to go missing for several minutes
+SCGCQ00139928  -  (PL) Incorrect release of scatter gather list local chains in firmware on pended IOs to a missing device.
+SCGCQ00138493  -  (SATA-only)Missing direct attached SATA drives following device removal and add.
+SCGCQ00154630  -  Incorrect buffer address while returning SATA PT Sense Data
+SCGCQ00155270  -  Compilation-Linker Error for Integrated Raid Builds
+SCGCQ00156917  -  Security Erase command reports error with 1068e HBAs
+SCGCQ00157623  -  Discovery Error 0x2 in maximum topology
+SCGCQ00138041  -  Enclosure mapped to invalid Target ID Range
+SCGCQ00158322  -  Gen 2 enclosures not mapped properly when using Enclosure/Slot mapping
+SCGCQ00155656  -  Implement option in NVDATA to send "Allocated Response Length" in SAS1 report general follow up
+Enhancements Implemented (4): 
+SCGCQ00142216  -  Enhance firmware handling of SATA Passthrough Reply (CK_COND bit set) for PIO Setup FIS
+SCGCQ00147780  -  (PL) Allow customer to indicate configured/unconfigured drive fault through FAULT_LEDs (IR build only)
+SCGCQ00149705  -  Implement option in NVDATA to send "Allocated Response Length" in SAS1 report general
+SCGCQ00151678  -  (IR) Allow customer to indicate configured/unconfigured drive fault through FAULT_LEDs

@@ -70,20 +70,49 @@ LSI `SAS3041ER` P21 package, mirrored in cm68/lsi-mpt-large):
 | `hbaFlash.bat` | original LSI flash script (DOS) |
 | `*_release_notes.txt`, `MPT_READ.TXT` | official LSI docs |
 
-Command (Linux after `modprobe mptctl`, or DOS/FreeDOS USB stick):
+**Step-by-step reproduction** (Linux; a DOS/FreeDOS variant using
+`hbaFlash.bat` performs the same flash interactively):
 
 ```bash
-sasflash -o -f 3041ERB3.fw -b mptsas.rom   # IR mode: RAID 0/1/1E/10E
-sasflash -o -f 3041ETB3.fw -b mptsas.rom   # IT mode: pure HBA
+# 0. device node + card identification
+sudo modprobe mptctl && sudo chmod 0666 /dev/mptctl
+tools/sasflash_linux -listall          # shows e.g. "LSI SAS 1068E(B3)"
+
+# 1. BACKUP FIRST — everything, before touching flash
+tools/sasflash_linux -o -uflash fullflash.bin -unvdata nvdata.bin \
+                     -ubios bios.rom -ufirmware fw.fw -l backup.log -listall
+
+# 2. crossflash  (IR = RAID 0/1/1E/10E; 3041ETB3.fw = IT / pure HBA)
+tools/sasflash_linux -o -f 3041ERB3.fw -b mptsas.rom
+
+# 3. reboot, then verify
+tools/sasflash_linux -listall          # → FW 01.33.00.00, BIOS 06.36.00.00
 ```
 
-Pick the file for your **chip revision** — `sasflash -listall` shows
-`1068E(B3)` → `*B3.fw` (B2 cards → `*B2.fw`).
+Expected dialog (mirrors `backup/flash_efibsd_*.log`):
 
-Vendor-locked OEM firmware may reject the image; then erase first:
-`sasflash -o -e 6` (clears everything except the manufacturing area —
-the SAS address survives) or `-e 7` (complete erase; the SAS address
-must be reprogrammed via `-sasadd`, it is printed on the card label).
+```
+Adapter Selected is a LSI SAS 1068E(B3):
+Executing Operation: Flash Firmware Image  →  Flash Firmware: SUCCESSFUL!
+Executing Operation: Flash BIOS Image      →  BIOS Flash: SUCCESSFUL!
+```
+
+Details that matter:
+
+- **Chip revision:** `sasflash -listall` prints `1068E(B3)` → use
+  `*B3.fw`; B2 silicon → `*B2.fw`.
+- **Tool:** `tools/sasflash_linux` = LSI **SASFlash 1.24.00.00**
+  (2009-11-13), static 32-bit ELF — runs on current kernels; SHA256
+  `7374058c…94e6c`. All flags: `SASFlash_Reference_Guide_v1_2-2008.pdf`.
+- **Vendor-locked OEM firmware** may reject the image → erase first:
+  `sasflash -o -e 6` (clears all except the manufacturing area; the SAS
+  address survives) or `-e 7` (complete erase; reprogram the SAS address
+  afterwards via `-sasadd` — printed on the card sticker).
+- **Historical path on this card:** the community P20 toolkit
+  (`firmware/debrand/p20_toolkit/`, numbered scripts `1_list → 2_backup
+  → 3_flash → 4_verify`, firmware `3081ERB3.fw` + `mptsas.rom` 6.34).
+  The card's end state is the P21 set above — flashing it directly
+  reaches the same result in one step.
 
 **Provenance proof:** our `-ufirmware` dump
 (`backup/fw_pre_efibsd_*.fw`) is **byte-identical to `3041ERB3.fw` up to
@@ -96,18 +125,59 @@ differs. The version string `MPTFW-01.33.00.00-IE` matches. And
 
 ### 3. Identity unification → SAS3041E-R
 
-Surgical edit of `ManufacturingPage0` via `lsiutil`
-(config page editor, option 9 → page type 9 → page 0 → NVRAM),
-**no reflash needed**, SAS WWID and PCI IDs untouched:
+Surgical edit of `ManufacturingPage0` via `lsiutil` — **no reflash
+needed**, SAS WWID and PCI IDs untouched. Complete session:
 
-| Field | Offset | Before | After |
+```text
+$ tools/lsiutil.x86_64 -p 1 -e            # -e = expert menu
+Select a device:  [1-1 or 0 to quit]  1
+Main menu, select an option:          9   # Read/change config pages
+Enter page type:   9                      # MANUFACTURING
+Enter page number: 0
+Read NVRAM or current values?  0          # 0 = NVRAM
+    → 76-byte hex dump of MfgPage0 appears
+Do you want to make changes?  yes
+Enter offset of value to change: <hex offset>
+Enter value:                     <8-digit hex dword>
+    → repeat per row below, RETURN to finish
+Do you want to write your changes?  yes   → "Changes have been written"
+0 → quit          # verify: lsiutil -p 1 -b
+```
+
+`lsiutil` shows the page as little-endian 32-bit words
+(`offset : dword`) — type the dword exactly as listed (it stores
+`SAS3` as `33534153`). Fields per `mpi_cnfg.h`: BoardName@0x1c,
+BoardAssembly@0x2c, BoardTracer@0x3c (16 bytes each, NUL-terminated):
+
+| Offset | Value | Bytes | Field |
 |---|---|---|---|
-| BoardName | 0x1c | `1064SASIME-3030` | `SAS3041E-R` |
-| BoardAssembly | 0x2c | `2010-02-26-0` | `SAS3041E-R00` |
-| BoardTracer | 0x3c | `FTS00000001` | `SP3041ER01` |
+| `1c` | `33534153` | `SAS3` | BoardName → `SAS3041E-R` |
+| `20` | `45313430` | `041E` | |
+| `24` | `0000522d` | `-R\0\0` | |
+| `28` | `00000000` | | *clears OEM residue* |
+| `2c` | `33534153` | `SAS3` | BoardAssembly → `SAS3041E-R00` |
+| `30` | `45313430` | `041E` | |
+| `34` | `3030522d` | `-R00` | |
+| `38` | `00000000` | | |
+| `3c` | `30335053` | `SP30` | BoardTracer → `SP3041ER01` |
+| `40` | `52453134` | `41ER` | |
+| `44` | `00003130` | `01\0\0` | |
+| `48` | `00000000` | | |
+
+`lsiutil` performs the required IOC re-init around the write
+automatically. Before/after states:
+
+| Field | Before (OEM) | After |
+|---|---|---|
+| BoardName | `1064SASIME-3030` | `SAS3041E-R` |
+| BoardAssembly | `2010-02-26-0` | `SAS3041E-R00` |
+| BoardTracer | `FTS00000001` | `SP3041ER01` |
 
 The diff `backup/config_pages_pre_*` ↔ `backup/config_pages_post_*`
-shows exactly the 9 changed 32-bit words — nothing else.
+shows the changed 32-bit words — nothing else. (Our edit skipped
+offset `28`, so `post` still shows dead bytes `30 33 30` = `"030"`
+*after* the NUL at 0x26 — invisible residue; zeroing it as listed
+above is cleaner.)
 
 > Rationale: the SAS3041E-R is the LSI retail counterpart with an
 > internal SFF-8087 connector — built on exactly this card's `C1064E`
@@ -170,6 +240,24 @@ SAS topology), and the mainboard splash logo is suppressed (the driver
 resets the display console during init). BIOS setup remains reachable
 via DEL/F11.
 
+**Reproducing the boot test** (any EFI app works; we used
+`shellx64.efi` from pbatard/UEFI-Shell):
+
+```bash
+# on the RAID volume (/dev/sdX as shown by lsblk -o NAME,MODEL):
+sudo parted -s /dev/sdX mklabel gpt mkpart ESP fat32 1MiB 1025MiB \
+            mkpart rootfs 1025MiB 100% set 1 esp on
+sudo mkfs.vfat -F32 /dev/sdX1
+sudo mount /dev/sdX1 /mnt && sudo mkdir -p /mnt/EFI/BOOT
+sudo cp shellx64.efi /mnt/EFI/BOOT/BOOTX64.EFI && sync && sudo umount /mnt
+```
+
+Reboot → F11 boot menu → the volume appears as **"UEFI OS"**
+(`LSILOGIC Logical Volume`) → selecting it starts the EFI app =
+end-to-end proof (UEFI → card ROM driver → RAID volume → FAT32 ESP →
+EFI binary). The board also registers it as a persistent `efibootmgr`
+entry (`BootXXXX UEFI OS → HD(1,GPT,…)\EFI\BOOT\BOOTX64.EFI`).
+
 ---
 
 ## Repo contents
@@ -193,6 +281,8 @@ firmware/  Original packages & flash images
            │    ├─ 1064E_P21_*.fw       same blobs, cm68 mirror
            │    ├─ mptsas.rom           x86 BIOS 6.36.00.00
            │    ├─ hbaFlash.bat         original LSI DOS flash script
+           │    ├─ p20_toolkit/         community P20 kit (scripts+fw)
+           │    ├─ SASFlash_Reference_Guide…pdf   official flag reference
            │    └─ release notes, SHA256SUMS.txt
            ├─ EFI_BSD_PH_21-3.22.00.zip    LSI EFI-BSD (retail, P21)
            ├─ Installer_P21_for_EFI.zip    incl. sasflash.efi (x64/EBC/Itanium)
@@ -255,8 +345,11 @@ programmer (e.g. CH341A) on the card's flash chip.
   http://sunhelp.org/pipermail/rescue_sunhelp.org/2020-July/142244.html
 - LSI EFI driver history (XServe era): InsanelyMac thread
   https://www.insanelymac.com/forum/topic/94679-sas-controllers-w-efi-for-mac-os-x-osx86-solutions/
-- Firmware research 1064/1068E (P21 IT/IR blobs):
+- Firmware research 1064/1068E (P21 IT/IR blobs, SAS3041ER package):
   https://github.com/cm68/lsi-mpt-large
+- P20 debrand toolkit (`SAS1068E_P20_Linux.zip`, community bundle):
+  included as `firmware/debrand/p20_toolkit/`; `SASFlash_Reference_
+  Guide_v1_2-2008.pdf` = the official flag reference for sasflash 1.24
 - UEFI Shell binaries: https://github.com/pbatard/UEFI-Shell
 
 ## Notes

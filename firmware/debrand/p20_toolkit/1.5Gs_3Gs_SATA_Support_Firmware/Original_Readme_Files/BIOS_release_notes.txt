@@ -1,0 +1,11 @@
+   SCG Engineering Release Notice
+Product: SAS2BIOS 
+Version: 6.34.00.00 
+Release Date: 07-DEC-10 
+Release Type: GCA 
+
+Defects Fixed (1) 
+Enhancements Implemented (0) 
+Defects Fixed (1): 
+SCGCQ00166742  -  SAS2BIOS: CU - SAS Topology screen has hightlight defects when PgDown is used
+Enhancements Implemented (0): 

@@ -1,0 +1,11 @@
+   SCG Engineering Release Notice
+Product: SASFlash 
+Version: 1.28.00.00 
+Release Date: 08-DEC-10 
+Release Type: GCA 
+
+Defects Fixed (0) 
+Enhancements Implemented (1) 
+Defects Fixed (0): 
+Enhancements Implemented (1): 
+SCGCQ00147041  -  Add NVRAM Check to Gen1 SASFlash EFI to Prevent Flashing IR Image to non-IR Products
